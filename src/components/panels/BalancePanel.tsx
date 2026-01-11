@@ -184,12 +184,12 @@ export const BalancePanel: React.FC = () => {
 
         {/* 自定义轨道列表 */}
         <div className="space-y-4">
-          {character.customProgressTracks.length === 0 && !showAddForm ? (
+          {(!character.customProgressTracks || character.customProgressTracks.length === 0) && !showAddForm ? (
             <p className="text-center text-theme-text-muted py-8">
               还没有自定义轨道，点击上方按钮创建
             </p>
           ) : (
-            character.customProgressTracks.map((track) => (
+            (character.customProgressTracks || []).map((track) => (
               <div 
                 key={track.id}
                 className="p-4 bg-theme-hover rounded-lg border border-theme-border"

@@ -156,6 +156,11 @@ export const useCharacterStore = create<CharacterState>()(
         character = storageService.getOrCreateCurrentCharacter();
       }
       
+      // 数据迁移：确保新字段存在
+      if (!character.customProgressTracks) {
+        character.customProgressTracks = [];
+      }
+      
       set((state) => {
         state.character = character;
         state.isLoaded = true;
