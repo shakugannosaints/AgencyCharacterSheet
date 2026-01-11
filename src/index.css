@@ -1,0 +1,334 @@
+/* 自定义字体 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   主题系统 - CSS 变量定义
+   ============================================ */
+
+/* 夜间模式（默认） - 深色科技感 */
+:root,
+[data-theme="night"] {
+  --theme-bg: 13, 13, 13;                /* #0d0d0d */
+  --theme-surface: 26, 26, 26;           /* #1a1a1a */
+  --theme-border: 61, 61, 61;            /* #3d3d3d */
+  --theme-hover: 42, 42, 42;             /* #2a2a2a */
+  --theme-text: 224, 224, 224;           /* #e0e0e0 */
+  --theme-text-muted: 153, 153, 153;     /* #999999 */
+  --theme-primary: 192, 57, 43;          /* #c0392b 信号红 */
+  --theme-primary-hover: 180, 45, 35;    /* 稍暗的红色 */
+  --theme-accent: 192, 57, 43;           /* #c0392b */
+  
+  /* 滚动条 */
+  --scrollbar-track: 22, 33, 62;
+  --scrollbar-thumb: 74, 85, 104;
+  --scrollbar-thumb-hover: 113, 128, 150;
+  
+  /* 阴影 */
+  --shadow-color: 0, 0, 0;
+}
+
+/* 日间模式 - 冷峻公司风格 */
+[data-theme="day"] {
+  --theme-bg: 248, 248, 250;             /* #f8f8fa 冷白背景 */
+  --theme-surface: 255, 255, 255;        /* #ffffff 纯白卡片 */
+  --theme-border: 220, 220, 225;         /* #dcdce1 冷灰边框 */
+  --theme-hover: 242, 242, 245;          /* #f2f2f5 悬停灰 */
+  --theme-text: 28, 28, 32;              /* #1c1c20 深灰文字 */
+  --theme-text-muted: 108, 108, 118;     /* #6c6c76 次要文字 */
+  --theme-primary: 200, 35, 45;          /* #c8232d 机构红 */
+  --theme-primary-hover: 175, 25, 35;    /* #af1923 深红 */
+  --theme-accent: 200, 35, 45;           /* #c8232d */
+  
+  /* 滚动条 */
+  --scrollbar-track: 240, 240, 242;
+  --scrollbar-thumb: 190, 190, 200;
+  --scrollbar-thumb-hover: 160, 160, 175;
+  
+  /* 阴影 */
+  --shadow-color: 120, 120, 140;
+}
+
+/* ============================================
+   基础样式重置
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(var(--theme-bg));
+  color: rgb(var(--theme-text));
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--scrollbar-track));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--scrollbar-thumb));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--scrollbar-thumb-hover));
+}
+
+/* 输入框占位符样式 */
+::placeholder {
+  color: rgb(var(--theme-text-muted));
+  opacity: 0.7;
+}
+
+/* 选中文本样式 */
+::selection {
+  background-color: rgba(var(--theme-primary), 0.3);
+  color: rgb(var(--theme-text));
+}
+
+/* 链接默认样式 */
+a {
+  color: rgb(var(--theme-primary));
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: rgb(var(--theme-primary-hover));
+}
+
+/* 焦点样式 */
+:focus-visible {
+  outline: 2px solid rgb(var(--theme-primary));
+  outline-offset: 2px;
+}
+
+/* 按钮基础样式 */
+button {
+  font-family: inherit;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* 进度条格子样式 */
+.progress-cell {
+  @apply w-full aspect-square border border-theme-border rounded-sm transition-all duration-150;
+}
+
+.progress-cell.filled {
+  @apply bg-theme-primary border-theme-primary;
+}
+
+.progress-cell.ignored {
+  @apply bg-gray-600 border-gray-500;
+}
+
+.progress-cell:hover:not(.filled):not(.ignored) {
+  @apply border-theme-primary/50 bg-theme-hover;
+}
+
+/* 点数追踪器样式 */
+.dot-tracker-dot {
+  @apply w-4 h-4 rounded-full border-2 transition-all duration-150 cursor-pointer;
+}
+
+.dot-tracker-dot.empty {
+  @apply border-gray-500 bg-transparent;
+}
+
+.dot-tracker-dot.filled {
+  @apply border-theme-primary bg-theme-primary;
+}
+
+.dot-tracker-dot.marked {
+  @apply border-yellow-500 bg-yellow-500;
+}
+
+.dot-tracker-dot:hover {
+  @apply transform scale-110;
+}
+
+/* 卡片悬浮效果 */
+.card-hover {
+  @apply transition-all duration-200;
+}
+
+.card-hover:hover {
+  @apply transform -translate-y-0.5 shadow-lg;
+}
+
+/* 异常色彩主题 */
+.anomaly-accent {
+  --accent-color: theme('colors.anomaly');
+}
+
+.reality-accent {
+  --accent-color: theme('colors.reality');
+}
+
+.function-accent {
+  --accent-color: theme('colors.functional');
+}
+
+/* 响应式工具类 */
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* ============================================
+   日间模式特殊样式
+   ============================================ */
+
+/* 日间模式下的阴影效果更明显 */
+[data-theme="day"] .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(var(--shadow-color), 0.08), 
+              0 4px 6px -2px rgba(var(--shadow-color), 0.04);
+}
+
+/* 日间模式卡片边框更细腻 */
+[data-theme="day"] .card-hover:hover {
+  box-shadow: 0 4px 12px rgba(var(--theme-primary), 0.08);
+}
+
+/* 日间模式下输入框焦点效果 */
+[data-theme="day"] input:focus,
+[data-theme="day"] textarea:focus,
+[data-theme="day"] select:focus {
+  box-shadow: 0 0 0 3px rgba(var(--theme-primary), 0.1);
+}
+
+/* 红色三角形装饰 - 日间模式企业文化符号 */
+.triangle-decoration {
+  position: relative;
+}
+
+.triangle-decoration::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+[data-theme="day"] .triangle-decoration::before {
+  border-width: 0 60px 100px 60px;
+  border-color: transparent transparent rgb(var(--theme-primary)) transparent;
+  top: -20px;
+  right: -30px;
+  opacity: 0.08;
+}
+
+/* 日间模式标题装饰线 */
+[data-theme="day"] .section-title {
+  position: relative;
+  padding-left: 12px;
+}
+
+[data-theme="day"] .section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 100%;
+  background: rgb(var(--theme-primary));
+  border-radius: 2px;
+}
+
+/* 日间模式按钮微妙效果 */
+[data-theme="day"] button:active {
+  transform: translateY(1px);
+}
+
+/* 打印样式 */
+@media print {
+  body {
+    background-color: white;
+    color: black;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
