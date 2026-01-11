@@ -7,3 +7,5 @@ export { AnomalyPanel } from './AnomalyPanel';
 export { RelationsPanel } from './RelationsPanel';
 export { ItemsPanel } from './ItemsPanel';
 export { QuestionnairePanel } from './QuestionnairePanel';
+export { BalancePanel } from './BalancePanel';
+export { NotesPanel } from './NotesPanel';

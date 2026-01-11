@@ -1,6 +1,6 @@
 /**
- * 属性面板组件
- * 包含资质属性、进度轨道、资源等
+ * 职能面板组件
+ * 包含资质属性、授权行为、资源等
  */
 import React from 'react';
 import { useCharacterStore } from '@/stores';
@@ -9,11 +9,7 @@ import {
   CardHeader, 
   DotTracker, 
   Counter, 
-  ProgressTrack, 
-  CollapseProgress,
-  TextArea,
   Input,
-  Button,
 } from '@/components/ui';
 import { ATTRIBUTE_NAMES } from '@/data';
 import type { AttributeName } from '@/types';
@@ -23,9 +19,6 @@ export const AttributesPanel: React.FC = () => {
   const setAttributeCurrent = useCharacterStore((state) => state.setAttributeCurrent);
   const setAttributeMax = useCharacterStore((state) => state.setAttributeMax);
   const toggleAttributeMarked = useCharacterStore((state) => state.toggleAttributeMarked);
-  const toggleProgressCell = useCharacterStore((state) => state.toggleProgressCell);
-  const ignoreProgressCell = useCharacterStore((state) => state.ignoreProgressCell);
-  const toggleCollapseSlot = useCharacterStore((state) => state.toggleCollapseSlot);
   const setCommendations = useCharacterStore((state) => state.setCommendations);
   const setReprimands = useCharacterStore((state) => state.setReprimands);
   const setPermission = useCharacterStore((state) => state.setPermission);
@@ -136,98 +129,6 @@ export const AttributesPanel: React.FC = () => {
             <div className="text-sm text-theme-text-muted">观察次数</div>
             <div className="text-2xl font-bold text-theme-text">{character.watchCount}</div>
           </div>
-        </div>
-      </Card>
-
-      {/* 进度轨道 */}
-      <Card variant="bordered">
-        <CardHeader 
-          title="进度轨道" 
-          subtitle="填充一个轨道会自动忽略其他轨道的相同位置"
-        />
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ProgressTrack
-            type="functional"
-            filled={character.progressTracks.functional.filled}
-            ignored={character.progressTracks.functional.ignored}
-            onCellClick={(index) => toggleProgressCell('functional', index)}
-            onCellRightClick={(index) => ignoreProgressCell('functional', index)}
-          />
-          
-          <ProgressTrack
-            type="reality"
-            filled={character.progressTracks.reality.filled}
-            ignored={character.progressTracks.reality.ignored}
-            onCellClick={(index) => toggleProgressCell('reality', index)}
-            onCellRightClick={(index) => ignoreProgressCell('reality', index)}
-          />
-          
-          <ProgressTrack
-            type="anomaly"
-            filled={character.progressTracks.anomaly.filled}
-            ignored={character.progressTracks.anomaly.ignored}
-            onCellClick={(index) => toggleProgressCell('anomaly', index)}
-            onCellRightClick={(index) => ignoreProgressCell('anomaly', index)}
-          />
-        </div>
-      </Card>
-
-      {/* 崩溃进度 */}
-      <Card variant="bordered">
-        <CardHeader 
-          title="现实过载" 
-          subtitle="当所有槽位填满时，必须选择新的现实"
-        />
-        
-        <CollapseProgress
-          slots={character.collapseProgress.slots}
-          onToggle={toggleCollapseSlot}
-        />
-      </Card>
-
-      {/* 笔记 */}
-      <Card variant="bordered">
-        <CardHeader 
-          title="笔记" 
-          subtitle="记录任何重要信息"
-          action={
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => useCharacterStore.getState().addNote()}
-            >
-              + 添加笔记
-            </Button>
-          }
-        />
-        
-        <div className="space-y-4">
-          {character.notes.length === 0 ? (
-            <p className="text-center text-theme-text-muted py-8">
-              还没有添加任何笔记，点击上方按钮添加
-            </p>
-          ) : (
-            character.notes.map((note, index) => (
-              <div key={index} className="relative">
-                <TextArea
-                  label={`笔记 ${index + 1}`}
-                  value={note}
-                  onChange={(e) => useCharacterStore.getState().setNote(index, e.target.value)}
-                  placeholder={`记录任何重要信息...`}
-                  rows={3}
-                />
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => useCharacterStore.getState().removeNote(index)}
-                  className="absolute top-0 right-0"
-                >
-                  删除
-                </Button>
-              </div>
-            ))
-          )}
         </div>
       </Card>
     </div>

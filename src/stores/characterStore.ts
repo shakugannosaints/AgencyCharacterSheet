@@ -12,6 +12,7 @@ import type {
   CharacterReality,
   CharacterRelationship,
   CharacterItem,
+  CustomProgressTrack,
 } from '@/types';
 import { 
   createNewCharacter, 
@@ -106,6 +107,12 @@ interface CharacterState {
   setNote: (index: number, value: string) => void;
   addNote: () => void;
   removeNote: (index: number) => void;
+  
+  // 自定义进度轨道
+  addCustomProgressTrack: (name: string, color: string, max: number) => void;
+  removeCustomProgressTrack: (id: string) => void;
+  updateCustomProgressTrack: (id: string, updates: Partial<{ name: string; color: string; max: number }>) => void;
+  toggleCustomProgressCell: (trackId: string, index: number) => void;
   
   // 问答
   setQuestion: (key: keyof CharacterData['questions'], value: string) => void;
@@ -617,6 +624,67 @@ export const useCharacterStore = create<CharacterState>()(
       set((state) => {
         if (index >= 0 && index < state.character.notes.length && state.character.notes.length > 1) {
           state.character.notes.splice(index, 1);
+          state.hasUnsavedChanges = true;
+        }
+      });
+      debouncedSave(get().character);
+    },
+
+    // === 自定义进度轨道 ===
+    
+    addCustomProgressTrack: (name, color, max) => {
+      set((state) => {
+        const newTrack: CustomProgressTrack = {
+          id: uuidv4(),
+          name,
+          color,
+          max: Math.max(1, max),
+          filled: [],
+        };
+        state.character.customProgressTracks.push(newTrack);
+        state.hasUnsavedChanges = true;
+      });
+      debouncedSave(get().character);
+    },
+
+    removeCustomProgressTrack: (id) => {
+      set((state) => {
+        const index = state.character.customProgressTracks.findIndex(t => t.id === id);
+        if (index !== -1) {
+          state.character.customProgressTracks.splice(index, 1);
+          state.hasUnsavedChanges = true;
+        }
+      });
+      debouncedSave(get().character);
+    },
+
+    updateCustomProgressTrack: (id, updates) => {
+      set((state) => {
+        const track = state.character.customProgressTracks.find(t => t.id === id);
+        if (track) {
+          if (updates.name !== undefined) track.name = updates.name;
+          if (updates.color !== undefined) track.color = updates.color;
+          if (updates.max !== undefined) {
+            track.max = Math.max(1, updates.max);
+            // 移除超出新最大值的填充
+            track.filled = track.filled.filter(i => i < track.max);
+          }
+          state.hasUnsavedChanges = true;
+        }
+      });
+      debouncedSave(get().character);
+    },
+
+    toggleCustomProgressCell: (trackId, index) => {
+      set((state) => {
+        const track = state.character.customProgressTracks.find(t => t.id === trackId);
+        if (track && index >= 0 && index < track.max) {
+          const filledIndex = track.filled.indexOf(index);
+          if (filledIndex === -1) {
+            track.filled.push(index);
+          } else {
+            track.filled.splice(filledIndex, 1);
+          }
           state.hasUnsavedChanges = true;
         }
       });

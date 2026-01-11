@@ -199,6 +199,21 @@ export interface CollapseProgress {
 }
 
 /**
+ * 自定义进度轨道
+ */
+export interface CustomProgressTrack {
+  id: string;
+  /** 轨道名称 */
+  name: string;
+  /** 轨道颜色（hex） */
+  color: string;
+  /** 最大格数 */
+  max: number;
+  /** 已填充的格子索引 */
+  filled: number[];
+}
+
+/**
  * 授权使用计数
  */
 export interface PermissionCounts {
@@ -302,6 +317,9 @@ export interface CharacterData {
   // === 笔记 ===
   notes: string[];
 
+  // === 自定义进度轨道 ===
+  customProgressTracks: CustomProgressTrack[];
+
   // === 问答 ===
   questions: QuestionsAnswers;
 }
@@ -313,7 +331,7 @@ export interface CharacterData {
 /**
  * 标签页类型
  */
-export type TabType = 'profile' | 'attributes' | 'anomaly' | 'relations' | 'items' | 'questionnaire';
+export type TabType = 'profile' | 'attributes' | 'anomaly' | 'relations' | 'items' | 'questionnaire' | 'balance' | 'notes';
 
 /**
  * 模态框类型

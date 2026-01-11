@@ -85,6 +85,9 @@ export function createNewCharacter(): CharacterData {
     // 笔记
     notes: ['', '', '', '', ''],
 
+    // 自定义进度轨道
+    customProgressTracks: [],
+
     // 问答
     questions: {
       q1: '',

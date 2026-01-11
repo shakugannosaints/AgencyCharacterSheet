@@ -1,6 +1,6 @@
 /**
  * 关系面板
- * 管理角色的人际关系
+ * 管理角色的人际关系和现实身份
  */
 import React, { useState } from 'react';
 import { useCharacterStore } from '@/stores';
@@ -12,6 +12,7 @@ import {
   TextArea,
   HybridSelect,
   Counter,
+  CollapseProgress,
 } from '@/components/ui';
 import { RELATIONSHIP_TYPES, findRealityByName, getRealityNames, getBonusOptions, bonuses } from '@/data';
 
@@ -29,6 +30,9 @@ export const RelationsPanel: React.FC = () => {
   const addReality = useCharacterStore((state) => state.addReality);
   const removeReality = useCharacterStore((state) => state.removeReality);
   const updateReality = useCharacterStore((state) => state.updateReality);
+  
+  // 现实过载
+  const toggleCollapseSlot = useCharacterStore((state) => state.toggleCollapseSlot);
 
   const relationshipTypeOptions = RELATIONSHIP_TYPES.map(type => ({ 
     value: type, 
@@ -267,6 +271,19 @@ export const RelationsPanel: React.FC = () => {
             ))
           )}
         </div>
+      </Card>
+
+      {/* 现实过载 */}
+      <Card variant="bordered">
+        <CardHeader 
+          title="现实过载" 
+          subtitle="当所有槽位填满时，必须选择新的现实"
+        />
+        
+        <CollapseProgress
+          slots={character.collapseProgress.slots}
+          onToggle={toggleCollapseSlot}
+        />
       </Card>
     </div>
   );
