@@ -6,6 +6,7 @@ import type { CharacterData } from '@/types';
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { findAnomalyByName, findRealityByName } from '@/data';
 
 /**
  * 导出角色为JSON文件
@@ -122,6 +123,8 @@ export function exportToOfflineHtml(character: CharacterData): void {
  */
 function generateOfflineHtml(character: CharacterData): string {
   const dataJson = JSON.stringify(character).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+  const mainAnomaly = findAnomalyByName(character.anomalyType);
+  const mainReality = findRealityByName(character.realityType);
   
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -270,6 +273,41 @@ function generateOfflineHtml(character: CharacterData): string {
         <span class="badge badge-reality">现实: ${character.realityType || '未选择'}</span>
         <span class="badge badge-functional">职能: ${character.functionType || '未选择'}</span>
       </div>
+      
+      ${mainAnomaly ? `
+        <div style="margin-top: 1rem; padding: 0.75rem; background: var(--dark-bg); border-radius: 4px; border-left: 4px solid var(--anomaly);">
+          <div style="font-weight: bold; color: var(--anomaly); margin-bottom: 0.5rem;">${mainAnomaly.name} 能力:</div>
+          ${mainAnomaly.abilities.map(ability => `
+            <div style="margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px dashed var(--dark-border);">
+              <div style="font-weight: bold; font-size: 0.95rem;">${ability.name} <span style="font-weight: normal; color: var(--muted-text); font-size: 0.8rem;">[触发: ${ability.trig}]</span></div>
+              <div style="font-size: 0.85rem; margin-top: 0.25rem;">${ability.qual}</div>
+              <div style="font-size: 0.8rem; margin-top: 0.4rem; line-height: 1.4;">
+                <div style="margin-bottom: 2px;"><span style="color: var(--signal-red);">成功：</span>${ability.succ}</div>
+                <div style="color: var(--muted-text);"><span style="font-weight: bold;">失败：</span>${ability.fail}</div>
+              </div>
+              ${ability.tdesc ? `
+                <div style="margin-top: 0.4rem; font-size: 0.75rem; color: var(--muted-text); font-style: italic;">
+                  ${ability.tdesc} (① ${ability.t1} / ② ${ability.t2})
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${mainReality ? `
+        <div style="margin-top: 1rem; padding: 0.75rem; background: var(--dark-bg); border-radius: 4px; border-left: 4px solid var(--reality);">
+          <div style="font-weight: bold; color: var(--reality); margin-bottom: 0.5rem;">${mainReality.name} 详情:</div>
+          <div style="margin-bottom: 0.5rem;">
+            <div style="color: var(--muted-text); font-size: 0.8rem;">触发:</div>
+            <div style="font-size: 0.85rem; white-space: pre-wrap;">${mainReality.trigger}</div>
+          </div>
+          <div>
+            <div style="color: var(--muted-text); font-size: 0.8rem;">过载:</div>
+            <div style="font-size: 0.85rem; white-space: pre-wrap;">${mainReality.overload}</div>
+          </div>
+        </div>
+      ` : ''}
     </div>
     
     <div class="section">
@@ -498,6 +536,10 @@ interface PdfColors {
  * 生成用于PDF的HTML内容
  */
 function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
+  // 查找主要身份详情
+  const mainAnomaly = findAnomalyByName(character.anomalyType);
+  const mainReality = findRealityByName(character.realityType);
+
   // 问卷问题
   const questions = [
     { key: 'q1', label: '你是如何与你的异常体接触的？' },
@@ -583,10 +625,34 @@ function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
         </div>
       </div>
 
-      <!-- 异常体列表 -->
-      ${character.anomalies.length > 0 ? `
+      <!-- 异常体能力 -->
+      ${(mainAnomaly || character.anomalies.length > 0) ? `
         <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-          <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">异常体</h3>
+          <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">异常体能力</h3>
+          
+          ${mainAnomaly ? `
+            <div style="background: ${colors.surfaceAlt}; padding: 12px; border-radius: 4px; margin-bottom: 12px; border-left: 4px solid ${colors.anomaly};">
+              <div style="font-weight: bold; color: ${colors.anomaly}; margin-bottom: 8px; font-size: 14px;">主要异常体：${mainAnomaly.name}</div>
+              <div style="padding-left: 8px;">
+                ${mainAnomaly.abilities.map(ability => `
+                  <div style="margin-bottom: 12px; border-bottom: 1px dashed ${colors.border}; padding-bottom: 8px;">
+                    <div style="font-weight: bold; font-size: 13px;">${ability.name} <span style="font-weight: normal; color: ${colors.textMuted}; font-size: 11px;">[触发: ${ability.trig}]</span></div>
+                    <div style="font-size: 12px; margin-top: 4px; line-height: 1.4;">${ability.qual}</div>
+                    <div style="font-size: 11px; margin-top: 6px; line-height: 1.4;">
+                      <div style="margin-bottom: 2px;"><span style="color: ${colors.primary}; font-weight: bold;">成功：</span>${ability.succ}</div>
+                      <div><span style="color: ${colors.textMuted}; font-weight: bold;">失败：</span>${ability.fail}</div>
+                    </div>
+                    ${ability.tdesc ? `
+                      <div style="margin-top: 6px; font-size: 10px; color: ${colors.textMuted}; font-style: italic;">
+                        ${ability.tdesc} (① ${ability.t1} / ② ${ability.t2})
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
           ${character.anomalies.map(anom => `
             <div style="background: ${colors.surfaceAlt}; padding: 12px; border-radius: 4px; margin-bottom: 8px;">
               <div style="font-weight: bold; color: ${colors.anomaly}; margin-bottom: 4px;">${anom.name || '未命名'}</div>
@@ -595,8 +661,7 @@ function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
                 <div style="border-left: 2px solid ${colors.anomaly}; padding-left: 12px; margin-top: 8px;">
                   ${anom.abilities.map(ability => `
                     <div style="margin-bottom: 8px;">
-                      <div style="font-weight: bold; font-size: 13px;">${ability.name}</div>
-                      <div style="color: ${colors.textMuted}; font-size: 11px;">触发: ${ability.trig}</div>
+                      <div style="font-weight: bold; font-size: 13px;">${ability.name} <span style="font-weight: normal; color: ${colors.textMuted}; font-size: 11px;">[触发: ${ability.trig}]</span></div>
                       ${ability.qual ? `<div style="font-size: 12px; margin-top: 4px;">${ability.qual}</div>` : ''}
                     </div>
                   `).join('')}
@@ -607,10 +672,25 @@ function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
         </div>
       ` : ''}
 
-      <!-- 现实列表 -->
-      ${character.realities.length > 0 ? `
+      <!-- 现实身份详情 -->
+      ${(mainReality || character.realities.length > 0) ? `
         <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-          <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">现实身份</h3>
+          <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">现实身份详情</h3>
+          
+          ${mainReality ? `
+            <div style="background: ${colors.surfaceAlt}; padding: 12px; border-radius: 4px; margin-bottom: 12px; border-left: 4px solid ${colors.reality};">
+              <div style="font-weight: bold; color: ${colors.reality}; margin-bottom: 8px; font-size: 14px;">主要身份：${mainReality.name}</div>
+              <div style="margin-bottom: 8px;">
+                <div style="color: ${colors.textMuted}; font-size: 11px; margin-bottom: 2px;">触发：</div>
+                <div style="font-size: 12px; white-space: pre-wrap;">${mainReality.trigger}</div>
+              </div>
+              <div>
+                <div style="color: ${colors.textMuted}; font-size: 11px; margin-bottom: 2px;">过载：</div>
+                <div style="font-size: 12px; white-space: pre-wrap;">${mainReality.overload || '-'}</div>
+              </div>
+            </div>
+          ` : ''}
+
           ${character.realities.map(reality => `
             <div style="background: ${colors.surfaceAlt}; padding: 12px; border-radius: 4px; margin-bottom: 8px;">
               <div style="font-weight: bold; color: ${colors.reality};">${reality.name || '未命名'}</div>
