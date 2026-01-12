@@ -111,7 +111,7 @@ export const Header: React.FC = () => {
               <span className="text-2xl text-signal-red">▲</span>
               <div>
                 <h1 className="text-lg font-bold text-theme-text">三角机构</h1>
-                <p className="text-xs text-theme-text-muted hidden sm:block">TTRPG 角色卡系统 v2.0</p>
+                <p className="text-xs text-theme-text-muted hidden sm:block">半自动角色卡</p>
               </div>
             </div>
 
