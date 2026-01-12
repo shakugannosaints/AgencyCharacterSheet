@@ -20,6 +20,8 @@ export const AttributesPanel: React.FC = () => {
   const setAttributeMax = useCharacterStore((state) => state.setAttributeMax);
   const setCommendations = useCharacterStore((state) => state.setCommendations);
   const setReprimands = useCharacterStore((state) => state.setReprimands);
+  const setMvpCount = useCharacterStore((state) => state.setMvpCount);
+  const setWatchCount = useCharacterStore((state) => state.setWatchCount);
   const setFunctionDirective = useCharacterStore((state) => state.setFunctionDirective);
   const incrementDirectiveUsedCount = useCharacterStore((state) => state.incrementDirectiveUsedCount);
   const decrementDirectiveUsedCount = useCharacterStore((state) => state.decrementDirectiveUsedCount);
@@ -100,6 +102,7 @@ export const AttributesPanel: React.FC = () => {
               label="嘉奖"
               value={character.commendations}
               onChange={setCommendations}
+              editable
               min={0}
             />
           </div>
@@ -108,16 +111,27 @@ export const AttributesPanel: React.FC = () => {
               label="申诫"
               value={character.reprimands}
               onChange={setReprimands}
+              editable
               min={0}
             />
           </div>
           <div className="p-3 bg-theme-hover rounded-lg">
-            <div className="text-sm text-theme-text-muted">MVP 次数</div>
-            <div className="text-2xl font-bold text-theme-text">{character.mvpCount}</div>
+            <Counter
+              label="MVP 次数"
+              value={character.mvpCount}
+              onChange={setMvpCount}
+              min={0}
+              editable
+            />
           </div>
           <div className="p-3 bg-theme-hover rounded-lg">
-            <div className="text-sm text-theme-text-muted">观察次数</div>
-            <div className="text-2xl font-bold text-theme-text">{character.watchCount}</div>
+            <Counter
+              label="观察次数"
+              value={character.watchCount}
+              onChange={setWatchCount}
+              min={0}
+              editable
+            />
           </div>
         </div>
       </Card>

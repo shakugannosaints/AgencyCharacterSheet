@@ -74,6 +74,8 @@ interface CharacterState {
   setReprimands: (value: number) => void;
   incrementMvpCount: () => void;
   incrementWatchCount: () => void;
+  setMvpCount: (value: number) => void;
+  setWatchCount: (value: number) => void;
   
   // 属性
   setAttributeCurrent: (name: AttributeName, value: number) => void;
@@ -422,9 +424,25 @@ export const useCharacterStore = create<CharacterState>()(
       debouncedSave(get().character);
     },
 
+    setMvpCount: (value) => {
+      set((state) => {
+        state.character.mvpCount = Math.max(0, Math.floor(value));
+        state.hasUnsavedChanges = true;
+      });
+      debouncedSave(get().character);
+    },
+
     incrementWatchCount: () => {
       set((state) => {
         state.character.watchCount++;
+        state.hasUnsavedChanges = true;
+      });
+      debouncedSave(get().character);
+    },
+
+    setWatchCount: (value) => {
+      set((state) => {
+        state.character.watchCount = Math.max(0, Math.floor(value));
         state.hasUnsavedChanges = true;
       });
       debouncedSave(get().character);

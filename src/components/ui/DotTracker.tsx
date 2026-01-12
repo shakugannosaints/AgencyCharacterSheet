@@ -159,6 +159,8 @@ interface CounterProps {
   label?: string;
   size?: 'sm' | 'md';
   readonly?: boolean;
+  /** 是否允许直接输入数字进行编辑 */
+  editable?: boolean;
 }
 
 export const Counter: React.FC<CounterProps> = ({
@@ -169,6 +171,7 @@ export const Counter: React.FC<CounterProps> = ({
   label,
   size = 'md',
   readonly = false,
+  editable = false,
 }) => {
   const handleChange = (delta: number) => {
     if (readonly || !onChange) return;
@@ -204,14 +207,28 @@ export const Counter: React.FC<CounterProps> = ({
         >
           −
         </button>
-        <span
-          className={clsx(
-            'min-w-[2.5rem] text-center font-mono font-bold text-theme-text',
-            sizeStyles[size]
-          )}
-        >
-          {value}
-        </span>
+        {editable && !readonly ? (
+          <input
+            type="number"
+            className={clsx('min-w-[2.5rem] text-center font-mono font-bold text-theme-text px-1 py-0.5 rounded border border-theme-border', sizeStyles[size])}
+            value={value}
+            min={min}
+            max={max}
+            onChange={(e) => {
+              const v = parseInt(e.target.value || `${min}`, 10);
+              if (!Number.isNaN(v) && onChange) onChange(Math.max(min, Math.min(max, v)));
+            }}
+          />
+        ) : (
+          <span
+            className={clsx(
+              'min-w-[2.5rem] text-center font-mono font-bold text-theme-text',
+              sizeStyles[size]
+            )}
+          >
+            {value}
+          </span>
+        )}
         <button
           type="button"
           onClick={() => handleChange(1)}
