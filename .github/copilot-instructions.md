@@ -1,41 +1,40 @@
 # Triangle Agency Character Sheet - AI Developer Guide
 
-## Project Overview
-This is a modular front-end character sheet system for the "Triangle Agency" TTRPG, built with **React 18**, **TypeScript**, and **Vite**.
+## Core Architecture
+- **State Management**: Using **Zustand** with **Immer** middleware (`src/stores/`). 
+  - Central data is `CharacterData` in `useCharacterStore`.
+  - Prefer immutable updates via `immer`'s `state.character.X = Y` syntax within store actions.
+  - Never update state directly in components; use store actions.
+- **Thick Store Pattern**: Complex logic (e.g., cross-attribute calculations, migration) lives in `characterStore.ts` or `src/utils/character.ts`, not in React components.
+- **Strict Typing**: `src/types/index.ts` defines the single source of truth for all data structures. All new fields must be added here first.
+- **Static Content**: Game rules are isolated in `src/data/*.ts`. Access them via helper functions like `findFunctionByName` or `getAnomalyNames`.
 
-## Architecture & State Management
-- **State First**: The application logic resembles a "thick client". Most logic lives in **Zustand** stores (`src/stores/`), not React components.
-- **Immutability**: `characterStore.ts` uses `immer` middleware. updates should mutate the draft state directly.
-- **Data Model**: The core data structure is strict and defined in `src/types/index.ts`. Always check/update types *before* modifying logic.
-- **Static Data**: Game rules (Anomalies, Realities, Functions) are separated in `src/data/`.
+## UI & Styling
+- **Design System**: Strict adherence to `VISUAL_STYLE_GUIDE.md`. 
+- **Tailwind CSS**: Use Tailwind for all styling. Use the `bg-theme-X` and `text-theme-Y` utility classes for theme compatibility.
+- **Reusable UI Components** (`src/components/ui/`):
+  - `DotTracker`: For 1-N attribute values (e.g., Professionalism, Grit).
+  - `ProgressTrack`: For 3x3 grids (Functional, Reality, Anomaly).
+  - `Card`: Standard container for sections.
+  - `Counter`: For numerical values with +/- buttons (e.g., KPI).
+- **Import Aliases**: Always use `@/` for project roots (e.g., `import { ... } from '@/stores'`).
 
-### Key Directories
-- `src/stores/`: Global state (`characterStore` for data, `uiStore` for interaction).
-- `src/components/panels/`: Main tab views (Profile, Attributes, etc.).
-- `src/components/ui/`: Reusable, generic UI components.
-- `src/data/`: JSON/TS definitions of static game rules.
-
-## Visual Style & Theming
-- **Strict Adherence**: Follow `VISUAL_STYLE_GUIDE.md` for all UI changes.
-- **Tailwind CSS**: Used for all styling. Use `clsx` for conditional class merging.
-- **Components**: Prefer using existing components in `src/components/ui/` over standard HTML elements.
-- **Themes**: The app supports multiple themes (Night, Day, Retro, etc.). Ensure colors use CSS variables or Tailwind theme classes compatible with theme switching.
-
-## Development Workflow
-- **Package Manager**: npm
-- **Dev Server**: `npm run dev` (Vite)
-- **Linting**: `npm run lint`
-- **Testing**: No automated test suite currently exists. Verify changes manually via the dev server.
-
-## Coding Conventions
-- **Imports**: Always use the `@/` alias for local imports (e.g., `import { useUIStore } from '@/stores'`).
-- **Icons**: Use `react-icons` or inline SVGs consistent with existing style.
-- **Types**: all strictly typed. Avoid `any`.
-- **File Structure**: Colocate feature-specific components in `src/components/panels/[FeatureName].tsx`.
+## Developer Workflows
+- **Running Dev**: `npm run dev`
+- **Build**: `npm run build` (runs `tsc` then `vite build`)
+- **Data Initialization**: `createNewCharacter` in `src/utils/character.ts` defines default values for all state fields.
+- **Persistence**: Managed by `storageService` in `src/utils/storage.ts` using `localStorage` with `lz-string` compression might be used (check `package.json`).
 
 ## Common Tasks Reference
-- **Adding a new Attribute/Field**:
-  1. Update type definition in `src/types/index.ts`.
-  2. Add default value in `createNewCharacter` utility.
-  3. Add setter action in `src/stores/characterStore.ts`.
-  4. Create/Update UI component in `src/components/panels/`.
+- **Adding a New Profile Field**:
+  1. Add property to `CharacterData` in `src/types/index.ts`.
+  2. Update `createNewCharacter` in `src/utils/character.ts` with a default value.
+  3. Add a setter action (e.g., `setField: (val) => void`) to `src/stores/characterStore.ts`.
+  4. Implement an `Input` or `Select` in `src/components/panels/ProfilePanel.tsx`.
+- **Handling Attribute Changes**:
+  - Most attribute logic should use the `setAttributeCurrent` action which handles range clamping.
+  - For complex logic (like "Self Assessment" affecting multiple attributes), implement it in the panel component calling multiple store actions.
+
+## Contextual Icons
+- Use `react-icons/fi` (Feather), `react-icons/ri` (Remix), or `react-icons/bi` (BoxIcons) consistently with existing icons.
+

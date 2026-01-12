@@ -306,8 +306,71 @@ function generateOfflineHtml(character: CharacterData): string {
         <span class="field-label">嘉奖:</span> <span class="field-value">${character.commendations}</span>
         &nbsp;&nbsp;
         <span class="field-label">申诫:</span> <span class="field-value">${character.reprimands}</span>
+        &nbsp;&nbsp;
+        <span class="field-label">MVP:</span> <span class="field-value">${character.mvpCount}</span>
+        &nbsp;&nbsp;
+        <span class="field-label">观察:</span> <span class="field-value">${character.watchCount}</span>
       </div>
     </div>
+    
+    ${character.anomalies.length > 0 ? `
+    <div class="section">
+      <h3 class="section-title">异常体</h3>
+      ${character.anomalies.map(anom => `
+        <div class="field" style="margin-bottom: 1rem;">
+          <div class="field-value" style="font-weight: bold; color: var(--anomaly);">${anom.name || '未命名'}</div>
+          ${anom.notes ? `<div class="field-label" style="margin-top: 0.25rem;">${anom.notes}</div>` : ''}
+          ${anom.abilities && anom.abilities.length > 0 ? `
+            <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 2px solid var(--anomaly);">
+              ${anom.abilities.map(ability => `
+                <div style="margin-bottom: 0.5rem;">
+                  <div style="font-weight: bold;">${ability.name}</div>
+                  <div class="field-label">触发: ${ability.trig}</div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('')}
+    </div>
+    ` : ''}
+    
+    ${character.realities.length > 0 ? `
+    <div class="section">
+      <h3 class="section-title">现实身份</h3>
+      ${character.realities.map(reality => `
+        <div class="field">
+          <div class="field-value" style="color: var(--reality);">${reality.name || '未命名'}</div>
+          ${reality.notes ? `<div class="field-label">${reality.notes}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+    ` : ''}
+    
+    ${character.relationships.length > 0 ? `
+    <div class="section">
+      <h3 class="section-title">人际关系</h3>
+      ${character.relationships.map(rel => `
+        <div class="field">
+          <div class="field-value">${rel.name || '未命名'} <span class="field-label">(${rel.type})</span></div>
+          ${rel.bondValue ? `<div class="field-label">连结值: ${rel.bondValue}</div>` : ''}
+          ${rel.description ? `<div class="field-label">${rel.description}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+    ` : ''}
+    
+    ${character.items.length > 0 ? `
+    <div class="section">
+      <h3 class="section-title">物品</h3>
+      ${character.items.map(item => `
+        <div class="field">
+          <div class="field-value">${item.name || '未命名物品'}</div>
+          ${item.effect ? `<div class="field-label">${item.effect}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+    ` : ''}
     
     <div class="offline-note">
       <p>此为离线导出版本 | 导出时间: ${new Date().toLocaleString('zh-CN')}</p>
@@ -519,6 +582,43 @@ function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
           <div><span style="color: ${colors.textMuted};">观察次数：</span><span style="font-weight: bold;">${character.watchCount}</span></div>
         </div>
       </div>
+
+      <!-- 异常体列表 -->
+      ${character.anomalies.length > 0 ? `
+        <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+          <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">异常体</h3>
+          ${character.anomalies.map(anom => `
+            <div style="background: ${colors.surfaceAlt}; padding: 12px; border-radius: 4px; margin-bottom: 8px;">
+              <div style="font-weight: bold; color: ${colors.anomaly}; margin-bottom: 4px;">${anom.name || '未命名'}</div>
+              ${anom.notes ? `<div style="color: ${colors.textMuted}; font-size: 12px; margin-bottom: 8px;">${anom.notes}</div>` : ''}
+              ${anom.abilities && anom.abilities.length > 0 ? `
+                <div style="border-left: 2px solid ${colors.anomaly}; padding-left: 12px; margin-top: 8px;">
+                  ${anom.abilities.map(ability => `
+                    <div style="margin-bottom: 8px;">
+                      <div style="font-weight: bold; font-size: 13px;">${ability.name}</div>
+                      <div style="color: ${colors.textMuted}; font-size: 11px;">触发: ${ability.trig}</div>
+                      ${ability.qual ? `<div style="font-size: 12px; margin-top: 4px;">${ability.qual}</div>` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <!-- 现实列表 -->
+      ${character.realities.length > 0 ? `
+        <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+          <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">现实身份</h3>
+          ${character.realities.map(reality => `
+            <div style="background: ${colors.surfaceAlt}; padding: 12px; border-radius: 4px; margin-bottom: 8px;">
+              <div style="font-weight: bold; color: ${colors.reality};">${reality.name || '未命名'}</div>
+              ${reality.notes ? `<div style="color: ${colors.textMuted}; font-size: 12px; margin-top: 4px;">${reality.notes}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
 
       <!-- 人际关系 -->
       ${character.relationships.length > 0 ? `
