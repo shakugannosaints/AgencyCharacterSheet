@@ -68,7 +68,7 @@ export const BalancePanel: React.FC = () => {
       <Card variant="bordered">
         <CardHeader 
           title="进度轨道" 
-          subtitle="填充一个轨道会自动忽略其他轨道的相同位置"
+          subtitle="填充进度会从其他轨道的末端自动忽略相同数量的格子"
         />
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

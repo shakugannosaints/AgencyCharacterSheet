@@ -13,6 +13,7 @@ import type {
   CharacterRelationship,
   CharacterItem,
   CustomProgressTrack,
+  AnomalyAbility,
 } from '@/types';
 import { 
   createNewCharacter, 
@@ -89,6 +90,9 @@ interface CharacterState {
   addAnomaly: (name?: string) => void;
   removeAnomaly: (id: string) => void;
   updateAnomaly: (id: string, updates: Partial<CharacterAnomaly>) => void;
+  addAnomalyAbility: (anomalyId: string) => void;
+  removeAnomalyAbility: (anomalyId: string, abilityIndex: number) => void;
+  updateAnomalyAbility: (anomalyId: string, abilityIndex: number, updates: Partial<AnomalyAbility>) => void;
   
   // 现实列表
   addReality: (name?: string) => void;
@@ -164,6 +168,25 @@ export const useCharacterStore = create<CharacterState>()(
       }
       if (typeof character.functionDirective === 'undefined') {
         character.functionDirective = '';
+      }
+      if (typeof character.anomalySlots === 'undefined') {
+        character.anomalySlots = 1;
+      }
+      if (typeof character.realitySlots === 'undefined') {
+        character.realitySlots = 1;
+      }
+      if (!character.anomalies) {
+        character.anomalies = [];
+      }
+      if (!character.realities) {
+        character.realities = [];
+      }
+      
+      // 确保额外异常有能力列表
+      if (character.anomalies) {
+        character.anomalies.forEach(a => {
+          if (!a.abilities) a.abilities = [];
+        });
       }
       
       set((state) => {
@@ -394,25 +417,39 @@ export const useCharacterStore = create<CharacterState>()(
         if (filledIndex === -1) {
           // 添加到已填充
           trackData.filled.push(index);
-          // 从忽略中移除
-          const ignIndex = trackData.ignored.indexOf(index);
-          if (ignIndex !== -1) {
-            trackData.ignored.splice(ignIndex, 1);
-          }
-          
-          // 级联逻辑：填充一个轨道时，忽略其他轨道的相同位置
-          const otherTracks: ProgressTrackType[] = ['functional', 'reality', 'anomaly']
-            .filter(t => t !== track) as ProgressTrackType[];
-          
-          for (const otherTrack of otherTracks) {
-            const otherData = state.character.progressTracks[otherTrack];
-            if (!otherData.filled.includes(index) && !otherData.ignored.includes(index)) {
-              otherData.ignored.push(index);
-            }
-          }
+          // 确保按顺序排序，方便管理
+          trackData.filled.sort((a, b) => a - b);
         } else {
           // 从已填充中移除
           trackData.filled.splice(filledIndex, 1);
+        }
+        
+        // 重新计算所有轨道的忽略格子
+        // 规则：轨道 T 的忽略格数 = 其他轨道填充格数之和
+        const tracks: ProgressTrackType[] = ['functional', 'reality', 'anomaly'];
+        const trackSize = 30; // 对应 PROGRESS_TRACK_SIZE
+
+        // 1. 先清空所有忽略
+        for (const t of tracks) {
+          state.character.progressTracks[t].ignored = [];
+        }
+
+        // 2. 根据其他轨道的填充数计算每个轨道的忽略列表
+        for (const t of tracks) {
+          const otherTracks = tracks.filter(ot => ot !== t);
+          const totalOtherFilled = otherTracks.reduce(
+            (sum, ot) => sum + state.character.progressTracks[ot].filled.length, 
+            0
+          );
+
+          // 从末尾开始添加忽略索引
+          for (let i = 0; i < totalOtherFilled && i < trackSize; i++) {
+            const ignoredIndex = trackSize - 1 - i;
+            // 只有当该位置没被填充时才加入忽略列表（虽然逻辑上应该互斥）
+            if (!state.character.progressTracks[t].filled.includes(ignoredIndex)) {
+              state.character.progressTracks[t].ignored.push(ignoredIndex);
+            }
+          }
         }
         
         state.hasUnsavedChanges = true;
@@ -442,7 +479,32 @@ export const useCharacterStore = create<CharacterState>()(
 
     clearProgressTrack: (track) => {
       set((state) => {
-        state.character.progressTracks[track] = { filled: [], ignored: [] };
+        state.character.progressTracks[track].filled = [];
+        state.character.progressTracks[track].ignored = [];
+        
+        // 重新计算所有轨道的忽略格子
+        const tracks: ProgressTrackType[] = ['functional', 'reality', 'anomaly'];
+        const trackSize = 30;
+
+        for (const t of tracks) {
+          state.character.progressTracks[t].ignored = [];
+        }
+
+        for (const t of tracks) {
+          const otherTracks = tracks.filter(ot => ot !== t);
+          const totalOtherFilled = otherTracks.reduce(
+            (sum, ot) => sum + state.character.progressTracks[ot].filled.length, 
+            0
+          );
+
+          for (let i = 0; i < totalOtherFilled && i < trackSize; i++) {
+            const ignoredIndex = trackSize - 1 - i;
+            if (!state.character.progressTracks[t].filled.includes(ignoredIndex)) {
+              state.character.progressTracks[t].ignored.push(ignoredIndex);
+            }
+          }
+        }
+        
         state.hasUnsavedChanges = true;
       });
       debouncedSave(get().character);
@@ -487,6 +549,7 @@ export const useCharacterStore = create<CharacterState>()(
           id: uuidv4(),
           name,
           notes: '',
+          abilities: [],
         });
         state.hasUnsavedChanges = true;
       });
@@ -509,6 +572,56 @@ export const useCharacterStore = create<CharacterState>()(
         const anomaly = state.character.anomalies.find(a => a.id === id);
         if (anomaly) {
           Object.assign(anomaly, updates);
+          state.hasUnsavedChanges = true;
+        }
+      });
+      debouncedSave(get().character);
+    },
+
+    addAnomalyAbility: (anomalyId) => {
+      set((state) => {
+        const anomaly = state.character.anomalies.find(a => a.id === anomalyId);
+        if (anomaly) {
+          if (!anomaly.abilities) anomaly.abilities = [];
+          anomaly.abilities.push({
+            name: '新能力',
+            trig: '专注',
+            qual: '如果你...',
+            succ: '获得...',
+            fail: '失去...',
+            tdesc: '',
+            t1: '',
+            t2: '',
+            t1v: '',
+            t2v: '',
+            t1c: 'blue',
+            t2c: 'orange',
+          });
+          state.hasUnsavedChanges = true;
+        }
+      });
+      debouncedSave(get().character);
+    },
+
+    removeAnomalyAbility: (anomalyId, abilityIndex) => {
+      set((state) => {
+        const anomaly = state.character.anomalies.find(a => a.id === anomalyId);
+        if (anomaly && anomaly.abilities) {
+          anomaly.abilities.splice(abilityIndex, 1);
+          state.hasUnsavedChanges = true;
+        }
+      });
+      debouncedSave(get().character);
+    },
+
+    updateAnomalyAbility: (anomalyId, abilityIndex, updates) => {
+      set((state) => {
+        const anomaly = state.character.anomalies.find(a => a.id === anomalyId);
+        if (anomaly && anomaly.abilities && anomaly.abilities[abilityIndex]) {
+          anomaly.abilities[abilityIndex] = {
+            ...anomaly.abilities[abilityIndex],
+            ...updates,
+          };
           state.hasUnsavedChanges = true;
         }
       });

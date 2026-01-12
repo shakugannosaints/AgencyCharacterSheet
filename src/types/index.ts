@@ -31,6 +31,12 @@ export interface AnomalyAbility {
   t1v?: string;
   /** 分支选项2关联值 */
   t2v?: string;
+  /** 分支选项1颜色 (Tailwind color name) */
+  t1c?: string;
+  /** 分支选项1颜色 (Tailwind color name) */
+  t1c?: string;
+  /** 分支选项2颜色 */
+  t2c?: string;
 }
 
 /**
@@ -137,6 +143,8 @@ export interface CharacterAnomaly {
   name: string;
   /** 备注 */
   notes: string;
+  /** 自定义能力列表 */
+  abilities?: AnomalyAbility[];
 }
 
 /**

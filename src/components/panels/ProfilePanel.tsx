@@ -86,7 +86,7 @@ export const ProfilePanel: React.FC = () => {
           <div className="flex-1 space-y-4">
             <Input
               label="姓名"
-              value={character.name}
+              value={character.name || ''}
               onChange={(e) => setName(e.target.value)}
               placeholder="输入角色姓名"
             />
@@ -94,13 +94,13 @@ export const ProfilePanel: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <Input
                 label="代号"
-                value={character.codename}
+                value={character.codename || ''}
                 onChange={(e) => setCodename(e.target.value)}
                 placeholder="输入特工代号"
               />
               <Input
                 label="性别代词"
-                value={character.genderPronoun}
+                value={character.genderPronoun || ''}
                 onChange={(e) => setGenderPronoun(e.target.value)}
                 placeholder="例如：她/她的"
               />
@@ -120,7 +120,7 @@ export const ProfilePanel: React.FC = () => {
           <HybridSelect
             label="异常体"
             options={anomalyOptions}
-            value={character.anomalyType}
+            value={character.anomalyType || ''}
             onChange={setAnomalyType}
             placeholder="选择或输入异常体类型"
           />
@@ -128,7 +128,7 @@ export const ProfilePanel: React.FC = () => {
           <HybridSelect
             label="现实身份"
             options={realityOptions}
-            value={character.realityType}
+            value={character.realityType || ''}
             onChange={setRealityType}
             placeholder="选择或输入现实身份"
           />
@@ -136,7 +136,7 @@ export const ProfilePanel: React.FC = () => {
           <HybridSelect
             label="职能"
             options={functionOptions}
-            value={character.functionType}
+            value={character.functionType || ''}
             onChange={(value) => setFunctionType(value, true)}
             placeholder="选择或输入职能"
           />

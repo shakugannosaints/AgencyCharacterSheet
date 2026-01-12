@@ -105,7 +105,7 @@ export const AttributesPanel: React.FC = () => {
           <div className="w-full">
             <textarea
               className="w-full px-3 py-2 bg-theme-surface border rounded transition-colors duration-200 text-theme-text placeholder-theme-text-muted resize-none focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent"
-              value={character.functionDirective}
+              value={character.functionDirective || ''}
               onChange={(e) => setFunctionDirective(e.target.value)}
               placeholder="职能指令..."
               rows={4}
