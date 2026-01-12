@@ -267,6 +267,8 @@ export interface CharacterData {
   realityType: string;
   /** 职能 */
   functionType: string;
+  /** 职能指令文本（来自职能配置的 directive 字段） */
+  functionDirective: string;
 
   // === 授权 ===
   /** 三个授权名称 */

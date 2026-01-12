@@ -42,6 +42,7 @@ export function createNewCharacter(): CharacterData {
     anomalyType: '',
     realityType: '',
     functionType: '',
+    functionDirective: '',
 
     // 授权
     permissions: ['', '', ''],

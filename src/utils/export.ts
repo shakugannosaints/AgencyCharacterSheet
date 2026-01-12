@@ -283,6 +283,12 @@ function generateOfflineHtml(character: CharacterData): string {
         `).join('')}
       </div>
     </div>
+      <div class="section">
+        <h3 class="section-title">指令</h3>
+        <div class="field">
+          <div class="field-value">${(character.functionDirective || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div>
+        </div>
+      </div>
     
     <div class="section">
       <h3 class="section-title">授权</h3>
@@ -488,6 +494,10 @@ function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
       </div>
 
       <!-- 授权行为 -->
+        <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+          <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">指令</h3>
+          <div style="white-space: pre-wrap; color: ${colors.text};">${(character.functionDirective || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+        </div>
       <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
         <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">授权行为</h3>
         ${character.permissions.map((perm, i) => `

@@ -61,6 +61,22 @@ export const AttributesPanel: React.FC = () => {
         </div>
       </Card>
 
+      {/* 指令（来自职能） */}
+      <Card variant="bordered">
+        <CardHeader
+          title="指令"
+          subtitle="职能赋予的指令描述"
+        />
+
+        <div className="p-4 bg-theme-hover rounded-lg">
+          {character.functionDirective ? (
+            <div className="whitespace-pre-wrap text-theme-text text-sm">{character.functionDirective}</div>
+          ) : (
+            <div className="text-theme-text-muted text-sm">未选择职能或无可用指令</div>
+          )}
+        </div>
+      </Card>
+
       {/* 授权行为 */}
       <Card variant="bordered">
         <CardHeader 

@@ -160,6 +160,9 @@ export const useCharacterStore = create<CharacterState>()(
       if (!character.customProgressTracks) {
         character.customProgressTracks = [];
       }
+      if (typeof character.functionDirective === 'undefined') {
+        character.functionDirective = '';
+      }
       
       set((state) => {
         state.character = character;
@@ -244,6 +247,12 @@ export const useCharacterStore = create<CharacterState>()(
             if (funcData.perms.length >= 3) {
               state.character.permissions = [...funcData.perms.slice(0, 3)];
             }
+                // 设置指令文本
+                if (funcData.directive) {
+                  state.character.functionDirective = funcData.directive;
+                } else {
+                  state.character.functionDirective = '';
+                }
             
             // 添加职能物品
             for (const item of funcData.items) {
@@ -261,6 +270,10 @@ export const useCharacterStore = create<CharacterState>()(
               }
             }
           }
+        }
+        // 如果未选择职能，则清空指令文本
+        if (!type) {
+          state.character.functionDirective = '';
         }
         
         state.hasUnsavedChanges = true;
