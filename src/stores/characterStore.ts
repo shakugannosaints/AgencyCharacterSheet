@@ -745,6 +745,8 @@ export const useCharacterStore = create<CharacterState>()(
           description: '',
           bondValue: 0,
           bonusIndex: undefined,
+          customBonusName: '',
+          customBonusEffect: '',
         });
         state.hasUnsavedChanges = true;
       });

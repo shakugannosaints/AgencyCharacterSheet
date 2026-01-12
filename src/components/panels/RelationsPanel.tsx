@@ -7,6 +7,7 @@ import { useCharacterStore } from '@/stores';
 import { 
   Card, 
   CardHeader, 
+  CollapsibleCard,
   Button,
   Input,
   TextArea,
@@ -177,12 +178,36 @@ export const RelationsPanel: React.FC = () => {
             </p>
           ) : (
             relationships.map((rel) => (
-              <div 
+              <CollapsibleCard
                 key={rel.id}
-                className="p-4 bg-theme-hover rounded-lg space-y-3"
+                title={rel.name || '新关系'}
+                defaultOpen={false}
+                variant="bordered"
+                padding="sm"
+                className="bg-theme-hover/30"
+                badge={
+                  <div className="flex gap-2">
+                    <span className="px-2 py-0.5 text-xs bg-theme-primary/10 text-theme-primary rounded border border-theme-primary/20">
+                      {rel.type}
+                    </span>
+                    <span className="px-2 py-0.5 text-xs bg-theme-bg/50 text-theme-text-muted rounded border border-theme-border">
+                      连结: {rel.bondValue || 0}
+                    </span>
+                  </div>
+                }
+                action={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1"
+                    onClick={() => removeRelationship(rel.id)}
+                  >
+                    删除
+                  </Button>
+                }
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Input
                       label="姓名"
                       value={rel.name}
@@ -211,63 +236,74 @@ export const RelationsPanel: React.FC = () => {
                     </div>
                   </div>
                   
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => removeRelationship(rel.id)}
-                    className="mt-6"
-                  >
-                    删除
-                  </Button>
-                </div>
-                
-                {/* 连结奖励选择 */}
-                <div>
-                  <label className="block text-sm font-medium text-theme-text-muted mb-1.5">
-                    连结奖励
-                  </label>
-                  <div className="flex gap-2">
-                    <select
-                      value={rel.bonusIndex ?? ''}
-                      onChange={(e) => updateRelationship(rel.id, { 
-                        bonusIndex: e.target.value === '' ? undefined : parseInt(e.target.value) 
-                      })}
-                      className="flex-1 px-3 py-2 bg-theme-surface border border-theme-border rounded text-theme-text focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent"
-                    >
-                      <option value="">无奖励</option>
-                      {bonusOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                    {rel.bonusIndex !== undefined && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setExpandedBonusId(expandedBonusId === rel.id ? null : rel.id)}
+                  {/* 连结奖励选择 */}
+                  <div>
+                    <label className="block text-sm font-medium text-theme-text-muted mb-1.5">
+                      连结奖励
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        value={rel.bonusIndex ?? ''}
+                        onChange={(e) => updateRelationship(rel.id, { 
+                          bonusIndex: e.target.value === '' ? undefined : parseInt(e.target.value) 
+                        })}
+                        className="flex-1 px-3 py-2 bg-theme-surface border border-theme-border rounded text-theme-text focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent"
                       >
-                        {expandedBonusId === rel.id ? '收起' : '详情'}
-                      </Button>
+                        <option value="">无奖励</option>
+                        {bonusOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                        <option value="-1">自定义奖励</option>
+                      </select>
+                      {rel.bonusIndex !== undefined && rel.bonusIndex !== -1 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setExpandedBonusId(expandedBonusId === rel.id ? null : rel.id)}
+                        >
+                          {expandedBonusId === rel.id ? '收起' : '详情'}
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {/* 奖励详情展开 (预设奖励) */}
+                    {rel.bonusIndex !== undefined && rel.bonusIndex !== -1 && expandedBonusId === rel.id && (
+                      <div className="mt-2 p-3 bg-theme-surface border border-theme-border rounded-lg text-sm text-theme-text whitespace-pre-line">
+                        {bonuses[rel.bonusIndex]}
+                      </div>
+                    )}
+
+                    {/* 自定义奖励输入 */}
+                    {rel.bonusIndex === -1 && (
+                      <div className="mt-3 p-3 bg-theme-bg/50 border border-theme-border border-dashed rounded-lg space-y-3">
+                        <Input
+                          label="自定义奖励名称"
+                          value={rel.customBonusName || ''}
+                          onChange={(e) => updateRelationship(rel.id, { customBonusName: e.target.value })}
+                          placeholder="输入奖励名称..."
+                        />
+                        <TextArea
+                          label="自定义奖励详情"
+                          value={rel.customBonusEffect || ''}
+                          onChange={(e) => updateRelationship(rel.id, { customBonusEffect: e.target.value })}
+                          placeholder="描述奖励的具体效果..."
+                          rows={2}
+                        />
+                      </div>
                     )}
                   </div>
                   
-                  {/* 奖励详情展开 */}
-                  {rel.bonusIndex !== undefined && expandedBonusId === rel.id && (
-                    <div className="mt-2 p-3 bg-theme-surface border border-theme-border rounded-lg text-sm text-theme-text">
-                      {bonuses[rel.bonusIndex]}
-                    </div>
-                  )}
+                  <TextArea
+                    label="描述"
+                    value={rel.description}
+                    onChange={(e) => updateRelationship(rel.id, { description: e.target.value })}
+                    placeholder="描述这段关系..."
+                    rows={2}
+                  />
                 </div>
-                
-                <TextArea
-                  label="描述"
-                  value={rel.description}
-                  onChange={(e) => updateRelationship(rel.id, { description: e.target.value })}
-                  placeholder="描述这段关系..."
-                  rows={2}
-                />
-              </div>
+              </CollapsibleCard>
             ))
           )}
         </div>

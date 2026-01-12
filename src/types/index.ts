@@ -201,6 +201,10 @@ export interface CharacterRelationship {
   bondValue?: number;
   /** 连结奖励（bonuses.json 中的索引） */
   bonusIndex?: number;
+  /** 自定义奖励名称 */
+  customBonusName?: string;
+  /** 自定义奖励详情 */
+  customBonusEffect?: string;
 }
 
 /**
