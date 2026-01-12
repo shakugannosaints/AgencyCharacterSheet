@@ -59,6 +59,8 @@ interface CharacterState {
   setPermission: (index: 0 | 1 | 2, value: string) => void;
   incrementPermissionCount: (index: 0 | 1 | 2) => void;
   decrementPermissionCount: (index: 0 | 1 | 2) => void;
+  // 指令（可编辑）
+  setFunctionDirective: (value: string) => void;
   
   // 资源
   setCommendations: (value: number) => void;
@@ -237,6 +239,7 @@ export const useCharacterStore = create<CharacterState>()(
 
     setFunctionType: (type, applyDefaults = true) => {
       set((state) => {
+        const prevType = state.character.functionType;
         state.character.functionType = type;
         
         // 级联逻辑：自动填充授权和物品
@@ -247,13 +250,12 @@ export const useCharacterStore = create<CharacterState>()(
             if (funcData.perms.length >= 3) {
               state.character.permissions = [...funcData.perms.slice(0, 3)];
             }
-                // 设置指令文本
-                if (funcData.directive) {
-                  state.character.functionDirective = funcData.directive;
-                } else {
-                  state.character.functionDirective = '';
-                }
-            
+
+            // 设置指令文本：当切换到不同职能或当前为空时，自动填充；否则保留用户编辑
+            if (prevType !== type || !state.character.functionDirective) {
+              state.character.functionDirective = funcData.directive || '';
+            }
+
             // 添加职能物品
             for (const item of funcData.items) {
               const exists = state.character.items.some(
@@ -286,6 +288,14 @@ export const useCharacterStore = create<CharacterState>()(
     setPermission: (index, value) => {
       set((state) => {
         state.character.permissions[index] = value;
+        state.hasUnsavedChanges = true;
+      });
+      debouncedSave(get().character);
+    },
+
+    setFunctionDirective: (value) => {
+      set((state) => {
+        state.character.functionDirective = value;
         state.hasUnsavedChanges = true;
       });
       debouncedSave(get().character);

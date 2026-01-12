@@ -21,6 +21,7 @@ export const AttributesPanel: React.FC = () => {
   const toggleAttributeMarked = useCharacterStore((state) => state.toggleAttributeMarked);
   const setCommendations = useCharacterStore((state) => state.setCommendations);
   const setReprimands = useCharacterStore((state) => state.setReprimands);
+  const setFunctionDirective = useCharacterStore((state) => state.setFunctionDirective);
   const setPermission = useCharacterStore((state) => state.setPermission);
   const incrementPermissionCount = useCharacterStore((state) => state.incrementPermissionCount);
   const decrementPermissionCount = useCharacterStore((state) => state.decrementPermissionCount);
@@ -61,7 +62,39 @@ export const AttributesPanel: React.FC = () => {
         </div>
       </Card>
 
-      {/* 指令（来自职能） */}
+      {/* 资源 */}
+      <Card variant="bordered">
+        <CardHeader title="资源" />
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="p-3 bg-theme-hover rounded-lg">
+            <Counter
+              label="嘉奖"
+              value={character.commendations}
+              onChange={setCommendations}
+              min={0}
+            />
+          </div>
+          <div className="p-3 bg-theme-hover rounded-lg">
+            <Counter
+              label="申诫"
+              value={character.reprimands}
+              onChange={setReprimands}
+              min={0}
+            />
+          </div>
+          <div className="p-3 bg-theme-hover rounded-lg">
+            <div className="text-sm text-theme-text-muted">MVP 次数</div>
+            <div className="text-2xl font-bold text-theme-text">{character.mvpCount}</div>
+          </div>
+          <div className="p-3 bg-theme-hover rounded-lg">
+            <div className="text-sm text-theme-text-muted">观察次数</div>
+            <div className="text-2xl font-bold text-theme-text">{character.watchCount}</div>
+          </div>
+        </div>
+      </Card>
+
+      {/* 指令（来自职能，可编辑） */}
       <Card variant="bordered">
         <CardHeader
           title="指令"
@@ -69,11 +102,18 @@ export const AttributesPanel: React.FC = () => {
         />
 
         <div className="p-4 bg-theme-hover rounded-lg">
-          {character.functionDirective ? (
-            <div className="whitespace-pre-wrap text-theme-text text-sm">{character.functionDirective}</div>
-          ) : (
-            <div className="text-theme-text-muted text-sm">未选择职能或无可用指令</div>
-          )}
+          <div className="w-full">
+            <textarea
+              className="w-full px-3 py-2 bg-theme-surface border rounded transition-colors duration-200 text-theme-text placeholder-theme-text-muted resize-none focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent"
+              value={character.functionDirective}
+              onChange={(e) => setFunctionDirective(e.target.value)}
+              placeholder="职能指令..."
+              rows={4}
+            />
+            {!character.functionDirective && (
+              <p className="mt-1 text-sm text-theme-text-muted">未选择职能或无可用指令</p>
+            )}
+          </div>
         </div>
       </Card>
 
