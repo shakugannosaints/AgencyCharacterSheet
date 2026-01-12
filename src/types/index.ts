@@ -33,8 +33,6 @@ export interface AnomalyAbility {
   t2v?: string;
   /** 分支选项1颜色 (Tailwind color name) */
   t1c?: string;
-  /** 分支选项1颜色 (Tailwind color name) */
-  t1c?: string;
   /** 分支选项2颜色 */
   t2c?: string;
 }
