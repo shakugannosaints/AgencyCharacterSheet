@@ -46,7 +46,7 @@ interface CharacterState {
   
   // 基础信息
   setName: (name: string) => void;
-  setPronouns: (pronouns: string) => void;
+  setCodename: (codename: string) => void;
   setGenderPronoun: (genderPronoun: string) => void;
   setPortrait: (portrait: string) => void;
   
@@ -190,9 +190,9 @@ export const useCharacterStore = create<CharacterState>()(
       debouncedSave(get().character);
     },
 
-    setPronouns: (pronouns) => {
+    setCodename: (codename) => {
       set((state) => {
-        state.character.pronouns = pronouns;
+        state.character.codename = codename;
         state.hasUnsavedChanges = true;
       });
       debouncedSave(get().character);

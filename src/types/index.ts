@@ -253,8 +253,8 @@ export interface CharacterData {
   // === 基础信息 ===
   /** 角色姓名 */
   name: string;
-  /** 代称 */
-  pronouns: string;
+  /** 代号 */
+  codename: string;
   /** 性别代词 */
   genderPronoun: string;
   /** 头像（Base64或URL） */

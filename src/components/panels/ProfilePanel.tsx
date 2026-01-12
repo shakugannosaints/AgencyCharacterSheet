@@ -9,7 +9,7 @@ import { getAnomalyNames, getRealityNames, getFunctionNames } from '@/data';
 export const ProfilePanel: React.FC = () => {
   const character = useCharacterStore((state) => state.character);
   const setName = useCharacterStore((state) => state.setName);
-  const setPronouns = useCharacterStore((state) => state.setPronouns);
+  const setCodename = useCharacterStore((state) => state.setCodename);
   const setGenderPronoun = useCharacterStore((state) => state.setGenderPronoun);
   const setPortrait = useCharacterStore((state) => state.setPortrait);
   const setAnomalyType = useCharacterStore((state) => state.setAnomalyType);
@@ -93,10 +93,10 @@ export const ProfilePanel: React.FC = () => {
             
             <div className="grid grid-cols-2 gap-4">
               <Input
-                label="代称"
-                value={character.pronouns}
-                onChange={(e) => setPronouns(e.target.value)}
-                placeholder="例如：他们"
+                label="代号"
+                value={character.codename}
+                onChange={(e) => setCodename(e.target.value)}
+                placeholder="输入特工代号"
               />
               <Input
                 label="性别代词"

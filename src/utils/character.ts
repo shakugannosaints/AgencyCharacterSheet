@@ -34,7 +34,7 @@ export function createNewCharacter(): CharacterData {
 
     // 基础信息
     name: '',
-    pronouns: '',
+    codename: '',
     genderPronoun: '',
     portrait: '',
 
@@ -142,7 +142,7 @@ function migrateFromV1(data: Record<string, unknown>): CharacterData {
   
   // 基础信息映射
   if (data.pName) newData.name = data.pName as string;
-  if (data.pPronouns) newData.pronouns = data.pPronouns as string;
+  if (data.pcodename) newData.codename = data.pcodename as string;
   if (data.pGenderPronoun) newData.genderPronoun = data.pGenderPronoun as string;
   if (data.pPortrait) newData.portrait = data.pPortrait as string;
   

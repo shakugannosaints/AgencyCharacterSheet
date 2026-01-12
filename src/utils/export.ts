@@ -260,7 +260,7 @@ function generateOfflineHtml(character: CharacterData): string {
       <h1>▲ 三角机构 ▲</h1>
       <h2>${character.name || '未命名特工'}</h2>
       ${character.portrait ? `<img class="portrait" src="${character.portrait}" alt="头像">` : ''}
-      <p>${character.pronouns || ''} ${character.genderPronoun || ''}</p>
+      <p>${character.codename || ''} ${character.genderPronoun || ''}</p>
     </div>
     
     <div class="section">
@@ -465,7 +465,7 @@ function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
         `}
         <div style="flex: 1;">
           <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px;">
-            <div style="margin-bottom: 8px;"><span style="color: ${colors.textMuted};">代称：</span>${character.pronouns || '-'}</div>
+            <div style="margin-bottom: 8px;"><span style="color: ${colors.textMuted};">代号：</span>${character.codename || '-'}</div>
             <div style="margin-bottom: 8px;"><span style="color: ${colors.textMuted};">性别代词：</span>${character.genderPronoun || '-'}</div>
             <div style="margin-bottom: 8px;"><span style="color: ${colors.textMuted};">异常体：</span><span style="color: ${colors.anomaly};">${character.anomalyType || '-'}</span></div>
             <div style="margin-bottom: 8px;"><span style="color: ${colors.textMuted};">现实身份：</span><span style="color: ${colors.reality};">${character.realityType || '-'}</span></div>
