@@ -156,37 +156,6 @@ export const AttributesPanel: React.FC = () => {
         </div>
       </Card>
 
-      {/* 资源 */}
-      <Card variant="bordered">
-        <CardHeader title="资源" />
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-3 bg-theme-hover rounded-lg">
-            <Counter
-              label="嘉奖"
-              value={character.commendations}
-              onChange={setCommendations}
-              min={0}
-            />
-          </div>
-          <div className="p-3 bg-theme-hover rounded-lg">
-            <Counter
-              label="申诫"
-              value={character.reprimands}
-              onChange={setReprimands}
-              min={0}
-            />
-          </div>
-          <div className="p-3 bg-theme-hover rounded-lg">
-            <div className="text-sm text-theme-text-muted">MVP 次数</div>
-            <div className="text-2xl font-bold text-theme-text">{character.mvpCount}</div>
-          </div>
-          <div className="p-3 bg-theme-hover rounded-lg">
-            <div className="text-sm text-theme-text-muted">观察次数</div>
-            <div className="text-2xl font-bold text-theme-text">{character.watchCount}</div>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 };
