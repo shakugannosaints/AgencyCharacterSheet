@@ -70,6 +70,26 @@ export interface FunctionItem {
 }
 
 /**
+ * 自我评估选项
+ */
+export interface SelfAssessmentOption {
+  /** 选项文本（包含属性提示） */
+  text: string;
+  /** 对应属性名称（如 "气场"、"坚毅" 等） */
+  attr: AttributeName;
+}
+
+/**
+ * 自我评估问题
+ */
+export interface SelfAssessmentQuestion {
+  /** 问题文本 */
+  question: string;
+  /** 选项列表（通常2个） */
+  options: SelfAssessmentOption[];
+}
+
+/**
  * 职能定义
  */
 export interface FunctionType {
@@ -81,6 +101,8 @@ export interface FunctionType {
   perms: string[];
   /** 职能物品列表 */
   items: FunctionItem[];
+  /** 自我评估问题列表（通常3个问题） */
+  selfAssessment: SelfAssessmentQuestion[];
 }
 
 // ============================================
@@ -88,7 +110,7 @@ export interface FunctionType {
 // ============================================
 
 /**
- * 9大资质属性
+ * 9大资质保证
  */
 export type AttributeName = 
   | '专注' | '欺瞒' | '活力' 
@@ -108,7 +130,7 @@ export interface AttributeValue {
 }
 
 /**
- * 9个资质属性集合
+ * 9个资质保证集合
  */
 export type Attributes = Record<AttributeName, AttributeValue>;
 
@@ -275,6 +297,12 @@ export interface CharacterData {
   functionType: string;
   /** 职能指令文本（来自职能配置的 directive 字段） */
   functionDirective: string;
+  /** 指令已使用计数 */
+  directiveUsedCount: number;
+
+  // === 自我评估 ===
+  /** 自我评估答案（问题索引 -> 选项索引） */
+  selfAssessmentAnswers: Record<number, number>;
 
   // === 授权 ===
   /** 三个授权名称 */
@@ -282,7 +310,7 @@ export interface CharacterData {
   /** 授权使用计数 */
   permissionCounts: PermissionCounts;
 
-  // === 资源 ===
+  // === KPI考核 ===
   /** 嘉奖数量 */
   commendations: number;
   /** 申诫数量 */

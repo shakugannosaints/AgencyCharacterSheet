@@ -42,7 +42,7 @@ export const gameConfig: GameConfig = {
 };
 
 /**
- * 9大资质属性列表
+ * 9大资质保证列表
  */
 export const ATTRIBUTE_NAMES = [
   '专注', '欺瞒', '活力',
@@ -70,6 +70,6 @@ export const PROGRESS_TRACK_SIZE = 30;
 export const COLLAPSE_SLOTS_COUNT = 4;
 
 /**
- * 默认属性最大值
+ * 默认属性最大值（初始上限）
  */
-export const DEFAULT_ATTRIBUTE_MAX = 5;
+export const DEFAULT_ATTRIBUTE_MAX = 3;

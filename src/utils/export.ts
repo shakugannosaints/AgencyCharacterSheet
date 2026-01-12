@@ -273,7 +273,7 @@ function generateOfflineHtml(character: CharacterData): string {
     </div>
     
     <div class="section">
-      <h3 class="section-title">资质属性</h3>
+      <h3 class="section-title">资质保证</h3>
       <div class="attributes-grid">
         ${Object.entries(character.attributes).map(([name, value]) => `
           <div class="attribute-item">
@@ -301,7 +301,7 @@ function generateOfflineHtml(character: CharacterData): string {
     </div>
     
     <div class="section">
-      <h3 class="section-title">资源</h3>
+      <h3 class="section-title">KPI考核</h3>
       <div class="field">
         <span class="field-label">嘉奖:</span> <span class="field-value">${character.commendations}</span>
         &nbsp;&nbsp;
@@ -482,7 +482,7 @@ function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
 
       <!-- 属性 -->
       <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-        <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">资质属性</h3>
+        <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">资质保证</h3>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
           ${Object.entries(character.attributes).map(([name, attr]) => `
             <div style="background: ${colors.surfaceAlt}; padding: 8px; border-radius: 4px; text-align: center;">
@@ -509,9 +509,9 @@ function generatePdfHtml(character: CharacterData, colors: PdfColors): string {
         `).join('')}
       </div>
 
-      <!-- 资源 -->
+      <!-- KPI考核 -->
       <div style="background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-        <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">资源</h3>
+        <h3 style="color: ${colors.primary}; font-size: 16px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid ${colors.border};">KPI考核</h3>
         <div style="display: flex; gap: 24px;">
           <div><span style="color: ${colors.textMuted};">嘉奖：</span><span style="font-weight: bold;">${character.commendations}</span></div>
           <div><span style="color: ${colors.textMuted};">申诫：</span><span style="font-weight: bold;">${character.reprimands}</span></div>

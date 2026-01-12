@@ -499,7 +499,7 @@ src/
     └── ui/                      # UI 组件（已应用主题样式）
 ```
 
-## 参考资源
+## 参考KPI考核
 
 - [Tailwind CSS 文档](https://tailwindcss.com/docs)
 - [Radix UI 文档](https://www.radix-ui.com/)

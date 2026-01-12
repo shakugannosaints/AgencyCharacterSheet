@@ -1,6 +1,6 @@
 /**
  * 属性点数追踪器组件
- * 用于显示和编辑资质属性的当前值/最大值
+ * 用于显示和编辑资质保证的当前值/最大值
  */
 import React from 'react';
 import clsx from 'clsx';

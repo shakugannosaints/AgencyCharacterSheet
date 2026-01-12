@@ -62,8 +62,14 @@ interface CharacterState {
   decrementPermissionCount: (index: 0 | 1 | 2) => void;
   // 指令（可编辑）
   setFunctionDirective: (value: string) => void;
+  incrementDirectiveUsedCount: () => void;
+  decrementDirectiveUsedCount: () => void;
   
-  // 资源
+  // 自我评估
+  setSelfAssessmentAnswer: (questionIndex: number, optionIndex: number) => void;
+  clearSelfAssessmentAnswer: (questionIndex: number) => void;
+  
+  // KPI考核
   setCommendations: (value: number) => void;
   setReprimands: (value: number) => void;
   incrementMvpCount: () => void;
@@ -168,6 +174,12 @@ export const useCharacterStore = create<CharacterState>()(
       }
       if (typeof character.functionDirective === 'undefined') {
         character.functionDirective = '';
+      }
+      if (typeof character.directiveUsedCount === 'undefined') {
+        character.directiveUsedCount = 0;
+      }
+      if (!character.selfAssessmentAnswers) {
+        character.selfAssessmentAnswers = {};
       }
       if (typeof character.anomalySlots === 'undefined') {
         character.anomalySlots = 1;
@@ -324,6 +336,46 @@ export const useCharacterStore = create<CharacterState>()(
       debouncedSave(get().character);
     },
 
+    incrementDirectiveUsedCount: () => {
+      set((state) => {
+        state.character.directiveUsedCount = (state.character.directiveUsedCount || 0) + 1;
+        state.hasUnsavedChanges = true;
+      });
+      debouncedSave(get().character);
+    },
+
+    decrementDirectiveUsedCount: () => {
+      set((state) => {
+        if ((state.character.directiveUsedCount || 0) > 0) {
+          state.character.directiveUsedCount--;
+          state.hasUnsavedChanges = true;
+        }
+      });
+      debouncedSave(get().character);
+    },
+
+    setSelfAssessmentAnswer: (questionIndex, optionIndex) => {
+      set((state) => {
+        if (!state.character.selfAssessmentAnswers) {
+          state.character.selfAssessmentAnswers = {};
+        }
+        state.character.selfAssessmentAnswers[questionIndex] = optionIndex;
+        state.hasUnsavedChanges = true;
+      });
+      debouncedSave(get().character);
+    },
+
+    clearSelfAssessmentAnswer: (questionIndex) => {
+      set((state) => {
+        if (state.character.selfAssessmentAnswers && 
+            state.character.selfAssessmentAnswers[questionIndex] !== undefined) {
+          delete state.character.selfAssessmentAnswers[questionIndex];
+          state.hasUnsavedChanges = true;
+        }
+      });
+      debouncedSave(get().character);
+    },
+
     incrementPermissionCount: (index) => {
       set((state) => {
         const key = `perm${index + 1}` as keyof typeof state.character.permissionCounts;
@@ -344,7 +396,7 @@ export const useCharacterStore = create<CharacterState>()(
       debouncedSave(get().character);
     },
 
-    // === 资源 ===
+    // === KPI考核 ===
     
     setCommendations: (value) => {
       set((state) => {

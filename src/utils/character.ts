@@ -43,6 +43,10 @@ export function createNewCharacter(): CharacterData {
     realityType: '',
     functionType: '',
     functionDirective: '',
+    directiveUsedCount: 0,
+
+    // 自我评估答案
+    selfAssessmentAnswers: {},
 
     // 授权
     permissions: ['', '', ''],
@@ -52,7 +56,7 @@ export function createNewCharacter(): CharacterData {
       perm3: 0,
     },
 
-    // 资源
+    // KPI考核
     commendations: 0,
     reprimands: 0,
     mvpCount: 0,
@@ -163,7 +167,7 @@ function migrateFromV1(data: Record<string, unknown>): CharacterData {
     newData.permissionCounts.perm3 = data.permCounts[2] || 0;
   }
   
-  // 资源
+  // KPI考核
   if (typeof data.pComm === 'number') newData.commendations = data.pComm;
   if (typeof data.pRep === 'number') newData.reprimands = data.pRep;
   if (typeof data.mvpCount === 'number') newData.mvpCount = data.mvpCount;
